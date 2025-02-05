@@ -239,7 +239,7 @@ s3_access_key = "env(S3_ACCESS_KEY)"
 s3_secret_key = "env(S3_SECRET_KEY)"
 
 [remotes.staging]
-project_id = "rnjdralljouhgiboyhlp"
+project_id = "iwpjlgiwnwdarljnpzae"
 
 [remotes.staging.db.seed]
 sql_paths = ["./seed-staging.sql"]
