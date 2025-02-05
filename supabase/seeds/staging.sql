@@ -1,4 +1,4 @@
 INSERT INTO public.test_table_1(id, bar)
 VALUES 
-    (2, 3)
+    (3, 4)
 ON CONFLICT (id) DO NOTHING;
