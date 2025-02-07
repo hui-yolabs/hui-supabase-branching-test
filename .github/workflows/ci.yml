@@ -1,0 +1,51 @@
+---
+name: Test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/**"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  # Retrieve <project-id> from dashboard url: https://app.supabase.com/project/<project-id>
+  PROJECT_ID: rnjdralljouhgiboyhlp
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Supabae CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 1.200.3
+
+      - run: supabase db start
+      - run: supabase db lint
+      - run: supabase test db
+
+      - name: Verify generated types are checked in
+        run: |
+          supabase gen types typescript --local > types.gen.ts
+          if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+            echo "Detected uncommitted changes after build. See status below:"
+            git diff
+            exit 1
+          fi
+
+  dryrun:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Supabae CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 1.200.3
+
+      - run: supabase link --project-ref $PROJECT_ID
+      - run: supabase db push --dry-run
