@@ -1,0 +1,33 @@
+---
+name: Deploy
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/**"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  # Retrieve <project-id> from dashboard url: https://app.supabase.com/project/<project-id>
+  PROJECT_ID: rnjdralljouhgiboyhlp
+jobs:
+  build:
+    name: Delpoy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Supabae CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 1.200.3
+      - name: Link
+        run: supabase link --project-ref $PROJECT_ID
+      - name: Push schema changes
+        run: supabase db push
+      - name: Deploy all functions
+        run: supabase functions deploy
